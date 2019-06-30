@@ -1,2 +1,0 @@
-# expensify
-Created with CodeSandbox

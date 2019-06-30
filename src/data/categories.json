@@ -1,0 +1,22 @@
+[
+    {
+        "id": "0f24695f-83e2-4d25-b51a-ff04638a9f42",
+        "name": "Software"
+    },
+    {
+        "id": "9ea558c4-666b-493f-b801-c0c1c8b259cd",
+        "name": "Entertainment"
+    },
+    {
+        "id": "b8a84008-4054-4951-beea-97a39c4410db",
+        "name": "Supermarket"
+    },
+    {
+        "id": "2854aad9-cbb1-48c4-af4d-0c72a6add8fd",
+        "name": "Business Services"
+    },
+    {
+        "id": "0ef187b3-bb6d-45a1-b5a2-3e584603badb",
+        "name": "General Expenses"
+    }
+]
