@@ -13,11 +13,14 @@ const useTableContext = () => useContext(TableContext)
 const initialState = {
   tableData: [],
   filteredData: [],
-  dataFilterText: "",
-  filterStatus: "all",
-  filterMerchant: "all",
   categories: [],
-  merchants: []
+  merchants: [],
+
+  filterTerm: "",
+  filterStatus: "all",
+  filterDate: ["from", ""],
+  filterMerchant: "all",
+  filterAmount: ""
 
   // authUser: { authenticated: false, userName: null },
   // userLoading: false,
@@ -51,7 +54,10 @@ function reducer(state, action) {
     case "FILTER_MERCHANT":
       return { ...state, filterMerchant: action.filterMerchant }
     case "DATA_FILTER_TEXT":
-      return { ...state, dataFilterText: action.dataFilterText }
+      return { ...state, filterTerm: action.filterTerm }
+
+    case "FILTER_AMOUNT":
+      return { ...state, filterAmount: action.filterAmount }
 
     // case "USER_LOADING":
     //   return { ...state, userLoading: action.payload }
@@ -107,74 +113,65 @@ async function getTableData(state, dispatch) {
   dispatch({ type: "FILTERED_DATA", filteredData: tableData })
 }
 
-function filterDataByText(state, data) {
-  return data.filter(
-    t =>
-      t.category.name
-        .toLowerCase()
-        .includes(state.dataFilterText.toLowerCase()) ||
-      t.merchant.name
-        .toLowerCase()
-        .includes(state.dataFilterText.toLowerCase()) ||
-      t.budget
-        .toString()
-        .toLowerCase()
-        .includes(state.dataFilterText.toLowerCase()) ||
-      t.gst
-        .toString()
-        .toLowerCase()
-        .includes(state.dataFilterText.toLowerCase()) ||
-      t.amount
-        .toString()
-        .toLowerCase()
-        .includes(state.dataFilterText.toLowerCase())
-  )
-}
-
-function filterByMerchant(state) {
-  return state.tableData.filter(t => t.merchant.name === state.filterMerchant)
-}
-function filterByStatus(state) {
-  return state.tableData.filter(t => t.status === state.filterStatus)
-}
-
 function filterData(state, dispatch) {
-  const isFilterActive =
-    state.filterStatus !== "all" || state.filterMerchant !== "all"
-
-  let filteredData
-
-  if (state.dataFilterText === "" && !isFilterActive) {
-    filteredData = state.tableData
+  let filteredData = state.tableData
+  // merchant, category, budget, gst, amount, team member
+  if (state.filterTerm !== "") {
+    filteredData = filterDataByTerm(state.filterTerm, filteredData)
   }
-
-  if (state.dataFilterText === "" && isFilterActive) {
-    if (state.filterMerchant !== "all" && state.filterStatus === "all") {
-      filteredData = filterByMerchant(state)
-    }
-    if (state.filterMerchant === "all" && state.filterStatus !== "all") {
-      filteredData = filterByStatus(state)
-    }
-
-    if (state.filterMerchant !== "all" && state.filterStatus !== "all") {
-      filteredData = filterByMerchant(state).filter(
-        t => t.status === state.filterStatus
-      )
-    }
+  // Status
+  if (state.filterStatus !== "all") {
+    filteredData = filterDataByStatus(state.filterStatus, filteredData)
   }
-
-  if (state.dataFilterText !== "" && !isFilterActive) {
-    filteredData = filterDataByText(state, state.tableData)
+  // Merchant
+  if (state.filterMerchant !== "all") {
+    filteredData = filterDataByMerchant(state.filterMerchant, filteredData)
   }
-
-  if (state.dataFilterText !== "" && isFilterActive) {
-    filteredData = filterDataByText(state, state.filteredData)
+  // Amount
+  if (state.filterAmount !== "") {
+    filteredData = filterDataByAmount(state.filterAmount, filteredData)
   }
+  // Date
+  // if (state.filterDate !== "all") {
+  //   filteredData = filterDataByDate(state.filterDate, filteredData)
+  // }
 
   dispatch({
     type: "FILTERED_DATA",
     filteredData
   })
+}
+
+function filterDataByTerm(filterTerm, data) {
+  return data.filter(
+    t =>
+      t.category.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
+      t.merchant.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
+      t.budget
+        .toString()
+        .toLowerCase()
+        .includes(filterTerm.toLowerCase()) ||
+      t.gst
+        .toString()
+        .toLowerCase()
+        .includes(filterTerm.toLowerCase()) ||
+      t.amount
+        .toString()
+        .toLowerCase()
+        .includes(filterTerm.toLowerCase())
+  )
+}
+
+function filterDataByStatus(filterStatus, data) {
+  return data.filter(t => t.status === filterStatus)
+}
+
+function filterDataByAmount(filterAmount, data) {
+  return data.filter(t => t.amount.toString().includes(filterAmount))
+}
+
+function filterDataByMerchant(filterMerchant, data) {
+  return data.filter(t => t.merchant.name === filterMerchant)
 }
 
 function onBillableChange(state, dispatch, id) {
@@ -201,10 +198,10 @@ function onfilterStatusChange(dispatch, filterStatus) {
     type: "FILTER_STATUS",
     filterStatus
   })
-  dispatch({
-    type: "DATA_FILTER_TEXT",
-    dataFilterText: ""
-  })
+  // dispatch({
+  //   type: "DATA_FILTER_TEXT",
+  //   filterTerm: ""
+  // })
 }
 
 function onfilterMerchantChange(dispatch, filterMerchant) {
@@ -212,16 +209,23 @@ function onfilterMerchantChange(dispatch, filterMerchant) {
     type: "FILTER_MERCHANT",
     filterMerchant
   })
+  // dispatch({
+  //   type: "DATA_FILTER_TEXT",
+  //   filterTerm: ""
+  // })
+}
+
+function onFilterTextChange(dispatch, filterTerm) {
   dispatch({
     type: "DATA_FILTER_TEXT",
-    dataFilterText: ""
+    filterTerm
   })
 }
 
-function onFilterTextChange(dispatch, dataFilterText) {
+function onFilterAmountChange(dispatch, filterAmount) {
   dispatch({
-    type: "DATA_FILTER_TEXT",
-    dataFilterText
+    type: "FILTER_AMOUNT",
+    filterAmount
   })
 }
 
@@ -229,7 +233,7 @@ export {
   Provider,
   useTableContext,
   getTableData,
-  filterDataByText,
+  onFilterAmountChange,
   onfilterStatusChange,
   onfilterMerchantChange,
   onFilterTextChange,

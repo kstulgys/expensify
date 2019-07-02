@@ -10,9 +10,10 @@ export default function DataTable() {
     filterData(state, dispatch)
   }, [
     state.tableData,
-    state.dataFilterText,
+    state.filterTerm,
     state.filterStatus,
-    state.filterMerchant
+    state.filterMerchant,
+    state.filterAmount
   ])
 
   if (!state.tableData.length) {
@@ -111,8 +112,6 @@ function ReceiptIcon({ status }) {
     return <i class="fas fa-receipt fa-lg text-yellow-500" />
   }
 }
-
-//<i class="fas fa-receipt"></i>
 
 function FormatDate(date) {
   return format(date, "MM.DD.YY")

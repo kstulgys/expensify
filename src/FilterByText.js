@@ -5,7 +5,7 @@ export default function FilterByText() {
   const { state, dispatch } = useTableContext()
   const [nothingFound, setNotFound] = useState(null)
 
-  const inputRef = useRef(state.dataFilterText)
+  const inputRef = useRef(state.filterTerm)
 
   useEffect(() => {
     inputRef.current.focus()
@@ -14,10 +14,10 @@ export default function FilterByText() {
   useEffect(() => {
     const nothingFound =
       !state.filteredData.length &&
-      state.dataFilterText !== "" &&
+      state.filterTerm !== "" &&
       "Nothing was found"
     setNotFound(nothingFound)
-  }, [state.dataFilterText, state.filteredData])
+  }, [state.filterTerm, state.filteredData])
 
   function handleSearch(e) {
     onFilterTextChange(dispatch, e.target.value)
@@ -33,7 +33,7 @@ export default function FilterByText() {
           <input
             ref={inputRef}
             // onBlur={() => setBlurred(!blurred)}
-            value={state.dataFilterText}
+            value={state.filterTerm}
             onChange={handleSearch}
             placeholder="Search"
             className="w-full text-gray-600 focus:outline-none shadow px-4 py-2 rounded-lg bg-white border-2 focus:border-indigo-400"

@@ -32,7 +32,7 @@ export default function DropDown({ label, options }) {
         <div class="relative" style={{ width: 101 }}>
           <button
             onClick={() => setOpen(!isOpen)}
-            class="flex items-center focus:outline-none w-full"
+            class="mt-1 flex items-center focus:outline-none w-full"
           >
             <span class="ml-1">{name}</span>
             <span class="ml-auto mr-1">
